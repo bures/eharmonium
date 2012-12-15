@@ -1,6 +1,6 @@
 package eharmonium
 
-class BellowsChordPlayer extends ChordPlayer {
+class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends ChordPlayer(bellowsLevelObserver) {
 	private val PLAYING_STOPPED = 1
 	private val PLAYING_PRESSED = 2
 	private val PLAYING_RELEASED = 3
@@ -82,18 +82,22 @@ class BellowsChordPlayer extends ChordPlayer {
 	}
 	
 	override protected def handleReset() {
-		handleStop()
+		if (currentChord != null) {
+			handleStop()
+			
+			tones = null		
+		}
 		
-		periodicTimer.stopTask()
-		
+		periodicTimer.stopTask()			
 		currentBellowsVol = 0
 		currentStressVol = 0
 		isBellowsPressedAsSpace = false
 		
+		bellowsLevelObserver.setBellowsLevel(0)
 		setVolume(0)
 	}
 	
-	private val maxStressVol = 7
+	private val maxStressVol = 10
 	private val maxBellowsVol = 125 - maxStressVol
 		
 	private def volumeTask() {
@@ -143,6 +147,7 @@ class BellowsChordPlayer extends ChordPlayer {
 				currentBellowsVol = 0
 		}
 	
+		bellowsLevelObserver.setBellowsLevel(currentBellowsVol / maxBellowsVol)
 		setVolume((currentBellowsVol + currentStressVol - stressVolDecay).floor.toInt)
 	}
 

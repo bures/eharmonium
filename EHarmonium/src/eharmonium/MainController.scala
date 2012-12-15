@@ -10,6 +10,10 @@ import javafx.scene.layout.Pane
 import javafx.stage.Stage
 import javafx.scene.layout.VBox
 import javafx.fxml.FXML
+import javafx.scene.shape.Rectangle
+import javafx.scene.paint.Paint
+import javafx.scene.paint.Color
+import javafx.application.Platform
 
 class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlayerMixin {
 	@FXML val vBoxChords: VBox = null
@@ -23,6 +27,8 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 	@FXML val vBoxChordsDim: VBox = null
 	@FXML val hBoxDim5Chords: HBox = null
 	@FXML val hBoxDimChords: HBox = null
+	
+	@FXML val bellowsLevel: Rectangle = null
 	
 	var key: Int = 12 // Root tone
 	var chordRootPos: Int = 6 // Position of the root major chord on the chord keyboard
@@ -38,7 +44,10 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 	}
 	
 	def resetAll() {
-		if (chordNowPlaying != null) chordNowPlaying.reset()
+		if (chordNowPlaying != null) 
+			chordNowPlaying.reset()
+		else 
+			chordPlayer.reset() // This is here to allows reseting bellows volume
 	}
 	
 	def updateChordRowsOpacity() {
@@ -186,7 +195,26 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 		buildKeyRow(lowerRow, false, KeyCodeModifier.SHIFT, CHORD_MINOR_7, hBoxMinor7Chords)
 		buildKeyRow(upperRow, true, KeyCodeModifier.CTRL, CHORD_DIM5, hBoxDim5Chords)
 		buildKeyRow(lowerRow, false, KeyCodeModifier.CTRL, CHORD_DIM, hBoxDimChords)
-}	
-
+	}
+	
+	object BellowsLevelPainter extends Runnable {
+		private val bellowsLevelColorBottom = Color.web("#2060ff")
+		private val bellowsLevelColorTop = Color.web("#e02080")
+		
+		var level: Int = 0
+		
+		override def run() {
+			val height = level * 105 / 1000
+			
+			bellowsLevel.setHeight(height)
+			bellowsLevel.setY(105 - height)
+			bellowsLevel.setFill(bellowsLevelColorBottom.interpolate(bellowsLevelColorTop, level / 1000.0))			
+		}
+	}
+	
+	override def setBellowsLevel(level: Double) {
+		BellowsLevelPainter.level = (level * 1000).floor.toInt
+		Platform.runLater(BellowsLevelPainter)
+	}
 
 }

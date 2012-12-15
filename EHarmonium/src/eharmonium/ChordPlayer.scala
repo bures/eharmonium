@@ -1,7 +1,11 @@
 package eharmonium
 
-trait ChordPlayerMixin {
-	private val chordPlayers = Array(new BellowsChordPlayer, new ArpeggioChordPlayer)
+trait BellowsLevelObserver {
+	def setBellowsLevel(level: Double)
+}
+
+trait ChordPlayerMixin extends BellowsLevelObserver {
+	private val chordPlayers = Array(new BellowsChordPlayer(this), new ArpeggioChordPlayer(this))
 	private var currentChordPlayerIdx = 0
 	
 	def chordPlayer = chordPlayers(currentChordPlayerIdx)
@@ -17,7 +21,7 @@ trait ChordPlayerMixin {
 	}
 }
 
-abstract class ChordPlayer {
+abstract class ChordPlayer(val bellowsLevelObserver: BellowsLevelObserver) {
 	protected var currentChord: Chord = null 
 	
 	protected def handlePlay()
@@ -80,6 +84,7 @@ abstract class ChordPlayer {
 	 */
 	def reset() {
 		handleReset()
+		currentChord = null
 	}
 } 
 

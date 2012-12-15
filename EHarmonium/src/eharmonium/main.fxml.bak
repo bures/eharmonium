@@ -11,54 +11,73 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="main" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#handleKeyPressed" onKeyReleased="#handleKeyReleased" prefHeight="115.0" prefWidth="877.0" xmlns:fx="http://javafx.com/fxml">
+<AnchorPane fx:id="main" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#handleKeyPressed" onKeyReleased="#handleKeyReleased" prefHeight="115.0" prefWidth="1052.0" xmlns:fx="http://javafx.com/fxml">
   <children>
-    <StackPane AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+    <HBox alignment="CENTER" spacing="5.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
       <children>
-        <VBox fx:id="vBoxChords" alignment="CENTER" spacing="5.0">
+        <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="105.0" prefWidth="867.0">
           <children>
-            <HBox fx:id="hBoxMajorChords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+            <VBox fx:id="vBoxChords" alignment="CENTER" spacing="5.0">
               <children>
-                <Pane prefHeight="50.0" prefWidth="27.0" />
+                <HBox fx:id="hBoxMajorChords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+                  <children>
+                    <Pane prefHeight="50.0" prefWidth="27.0" />
+                  </children>
+                </HBox>
+                <HBox fx:id="hBoxMinorChords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+                  <children>
+                    <Pane prefHeight="50.0" prefWidth="27.0" />
+                  </children>
+                </HBox>
               </children>
-            </HBox>
-            <HBox fx:id="hBoxMinorChords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+            </VBox>
+            <VBox fx:id="vBoxChords7" alignment="CENTER" spacing="5.0">
               <children>
-                <Pane prefHeight="50.0" prefWidth="27.0" />
+                <HBox fx:id="hBoxMajor7Chords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+                  <children>
+                    <Pane prefHeight="50.0" prefWidth="27.0" />
+                  </children>
+                </HBox>
+                <HBox fx:id="hBoxMinor7Chords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+                  <children>
+                    <Pane prefHeight="50.0" prefWidth="27.0" />
+                  </children>
+                </HBox>
               </children>
-            </HBox>
+            </VBox>
+            <VBox fx:id="vBoxChordsDim" alignment="CENTER" spacing="5.0">
+              <children>
+                <HBox fx:id="hBoxDim5Chords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+                  <children>
+                    <Pane prefHeight="50.0" prefWidth="27.0" />
+                  </children>
+                </HBox>
+                <HBox fx:id="hBoxDimChords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+                  <children>
+                    <Pane prefHeight="50.0" prefWidth="27.0" />
+                  </children>
+                </HBox>
+              </children>
+            </VBox>
           </children>
-        </VBox>
-        <VBox fx:id="vBoxChords7" alignment="CENTER" spacing="5.0">
+        </StackPane>
+        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="105.0" prefWidth="15.0">
           <children>
-            <HBox fx:id="hBoxMajor7Chords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
-              <children>
-                <Pane prefHeight="50.0" prefWidth="27.0" />
-              </children>
-            </HBox>
-            <HBox fx:id="hBoxMinor7Chords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
-              <children>
-                <Pane prefHeight="50.0" prefWidth="27.0" />
-              </children>
-            </HBox>
+            <Rectangle id="channelLevel" fx:id="bellowsLevel" arcHeight="5.0" arcWidth="5.0" fill="#2060ff" stroke="BLACK" strokeType="INSIDE" width="15.0" y="105.0" />
           </children>
-        </VBox>
-        <VBox fx:id="vBoxChordsDim" alignment="CENTER" spacing="5.0">
-          <children>
-            <HBox fx:id="hBoxDim5Chords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
-              <children>
-                <Pane prefHeight="50.0" prefWidth="27.0" />
-              </children>
-            </HBox>
-            <HBox fx:id="hBoxDimChords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
-              <children>
-                <Pane prefHeight="50.0" prefWidth="27.0" />
-              </children>
-            </HBox>
-          </children>
-        </VBox>
+        </Pane>
+        <GridPane hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="105.0" prefWidth="150.0" vgap="5.0">
+          <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          </columnConstraints>
+          <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          </rowConstraints>
+        </GridPane>
       </children>
-    </StackPane>
+    </HBox>
   </children>
   <stylesheets>
     <URL value="@main.css" />

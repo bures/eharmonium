@@ -1,6 +1,6 @@
 package eharmonium
 
-class ArpeggioChordPlayer extends ChordPlayer {
+class ArpeggioChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends ChordPlayer(bellowsLevelObserver) {
 	
 	private val sequence = Array(
 			Array(0, 2),
@@ -27,6 +27,7 @@ class ArpeggioChordPlayer extends ChordPlayer {
 		isPressed = true
 
 		Sampler.setVolume(0, 100)
+		bellowsLevelObserver.setBellowsLevel(1)
 
 		playingState = 0
 		for (note <- sequence(playingState))
@@ -59,6 +60,7 @@ class ArpeggioChordPlayer extends ChordPlayer {
 	protected def handleReset() {
 		stop()
 		Sampler.setVolume(0, 0)
+		bellowsLevelObserver.setBellowsLevel(0)
 	}
 	
 	protected def handleSpacePressed() {}

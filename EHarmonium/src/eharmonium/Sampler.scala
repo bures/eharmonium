@@ -40,7 +40,7 @@ object Sampler {
 		sm.setMessage(ShortMessage.CONTROL_CHANGE, channel, CHANNEL_VOLUME_MSB, actualVolume)
 		recv.send(sm, -1)
 		
-		println("Sampler: channel " + channel + " volume " + actualVolume)
+		// println("Sampler: channel " + channel + " volume " + actualVolume)
 	}
 	
 	def noteOn(channel: Int, tone: Int) {

@@ -1,9 +1,5 @@
 package eharmonium
 
-import java.util.Timer
-import java.util.TimerTask
-import CurrentPlayStyle.playStyle
-
 abstract class ChordKind(val kindName: String, val nameSuffix: String, val pattern: List[Int], val relPositionToMajor: Int)
 object CHORD_MAJOR extends ChordKind("Major", "", List(0, 4, 7), 0)
 object CHORD_MINOR extends ChordKind("Minor", "m", List(0, 3, 7), 3)
@@ -13,15 +9,15 @@ object CHORD_DIM5 extends ChordKind("Dim 5th", "5b", List(0, 4, 6), 0)
 object CHORD_DIM extends ChordKind("Dim", "°", List(0, 3, 6), 0)
 
 object Chord {
-	val abstractNames = Array("I", "ii", "II", "iii", "III", "IV", "v", "V", "vi", "VI", "vii", "VII")
-	val chordNames = Array("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H")
+	private val abstractNames = Array("I", "ii", "II", "iii", "III", "IV", "v", "V", "vi", "VI", "vii", "VII")
+	private val chordNames = Array("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H")
 	
-	def buildChords(baseFirst: Int, baseLast: Int, kind: ChordKind) = {
+	private def buildChords(baseFirst: Int, baseLast: Int, kind: ChordKind) = {
 		val chords = (baseFirst to baseLast) map {new Chord(_, kind)}
 		chords.toArray
 	}
 	
-	val chords = Map(
+	private val chords = Map(
 		CHORD_MAJOR -> buildChords(24, 107, CHORD_MAJOR),
 		CHORD_MINOR -> buildChords(24, 107, CHORD_MINOR),	
 		CHORD_MAJOR_7 -> buildChords(24, 107, CHORD_MAJOR_7),
@@ -46,10 +42,4 @@ class Chord(val base: Int, val kind: ChordKind) {
 	def octave = (base - 12) / 12
 	
 	def tones = kind.pattern map {_ + base}
-	
-	def play() = playStyle.play(base, tones)
-	def pressed() = playStyle.pressed()
-	def released() = playStyle.released()
-	def stop() = playStyle.stop()
-	def reset() = playStyle.reset()
 }

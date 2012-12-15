@@ -26,7 +26,7 @@ class Main extends Application {
 		});
 		
 		stage.setTitle("E-Harmonium");
-		stage.setScene(new Scene(root, 877, 115))
+		stage.setScene(new Scene(root, 1032, 115))
 		stage.show();
 	}
 	

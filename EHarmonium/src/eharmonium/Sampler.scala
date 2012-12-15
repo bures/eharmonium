@@ -1,21 +1,22 @@
 package eharmonium
+
 import javax.sound.midi.MidiDevice
 import javax.sound.midi.MidiSystem
 import javax.sound.midi.Receiver
 import javax.sound.midi.ShortMessage
 
 object Sampler {
-	var recvDevice: MidiDevice = null
-	var recv: Receiver = null
+	private var recvDevice: MidiDevice = null
+	private var recv: Receiver = null
 
-	val PAN_MSB = 10 // 0 .. 127
-	val PAN_LSB = 42 // 0 .. 127
-	val REVERB = 91 // 0 .. 127
-	val CHANNEL_VOLUME_MSB = 7
-	val CHANNEL_VOLUME_LSB = 39
+	private val PAN_MSB = 10 // 0 .. 127
+	private val PAN_LSB = 42 // 0 .. 127
+	private val REVERB = 91 // 0 .. 127
+	private val CHANNEL_VOLUME_MSB = 7
+	private val CHANNEL_VOLUME_LSB = 39
 
-	var overallVolume = 100 // 0..100
-	val volumes = Array(100, 100)
+	private var overallVolume = 100 // 0..100
+	private val volumes = Array(100, 100)
 	
 	def init() {
 		val deviceInfo = MidiSystem.getMidiDeviceInfo.find(_.getName == "CoolSoft VirtualMIDISynth").orNull
@@ -39,21 +40,21 @@ object Sampler {
 		sm.setMessage(ShortMessage.CONTROL_CHANGE, channel, CHANNEL_VOLUME_MSB, actualVolume)
 		recv.send(sm, -1)
 		
-		println("Sampler: vol " + actualVolume)
+		println("Sampler: channel " + channel + " volume " + actualVolume)
 	}
 	
 	def noteOn(channel: Int, tone: Int) {
 		val sm = new ShortMessage
 		sm.setMessage(ShortMessage.NOTE_ON, channel, tone, 100)
 		recv.send(sm, -1)
-		println("Sampler: " + tone + " on")
+		println("Sampler: channel " + channel + " tone " + tone + " on")
 	}
 
 	def noteOff(channel: Int, tone: Int) {
 		val sm = new ShortMessage
 		sm.setMessage(ShortMessage.NOTE_OFF, channel, tone, 0)
 		recv.send(sm, -1)
-		println("Sampler: " + tone + " off")
+		println("Sampler: channel " + channel + " tone " + tone + " off")
 	}
 	
 	def setOverallVolume(volume: Int) {
@@ -62,8 +63,10 @@ object Sampler {
 		if (overallVolume > 100) overallVolume = 100
 		else if (overallVolume < 0) overallVolume = 0
 		
-		setVolume(0, volumes(0))
-//		setVolume(1, volumes(1))
+		for (i <- 0 until volumes.length) {
+			setVolume(i, volumes(i))			
+		}
+
 	}
 	
 	def getOverallVolume = overallVolume

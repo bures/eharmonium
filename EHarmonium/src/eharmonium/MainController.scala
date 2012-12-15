@@ -9,63 +9,37 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
 import javafx.stage.Stage
 import javafx.scene.layout.VBox
-import javafx.animation.FadeTransition
-import javafx.util.Duration
+import javafx.fxml.FXML
 
-class MainController(val stage: Stage) {
-	var key: Int = 12
-	var chordRootPos: Int = 6
+class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlayerMixin {
+	@FXML val vBoxChords: VBox = null
+	@FXML val hBoxMajorChords: HBox = null
+	@FXML val hBoxMinorChords: HBox = null
+
+	@FXML val vBoxChords7: VBox = null
+	@FXML val hBoxMajor7Chords: HBox = null
+	@FXML val hBoxMinor7Chords: HBox = null
+	
+	@FXML val vBoxChordsDim: VBox = null
+	@FXML val hBoxDim5Chords: HBox = null
+	@FXML val hBoxDimChords: HBox = null
+	
+	var key: Int = 12 // Root tone
+	var chordRootPos: Int = 6 // Position of the root major chord on the chord keyboard
 	var chordRelativeHighestNote = 4
+	
 	var chordNowPlaying: ChordKeyController = null
 	
-	var shift7 = false
-	var shiftDim = false
-	
-	val keyboardKeys = MutableList.empty[ChordKeyController]
-	
 	var keyCodeModifier = 0
-
-	@FXML val vBoxChords: VBox = null;
-	@FXML val hBoxMajorChords: HBox = null;
-	@FXML val hBoxMinorChords: HBox = null;
-
-	@FXML val vBoxChords7: VBox = null;
-	@FXML val hBoxMajor7Chords: HBox = null;
-	@FXML val hBoxMinor7Chords: HBox = null;
-	
-	@FXML val vBoxChordsDim: VBox = null;
-	@FXML val hBoxDim5Chords: HBox = null;
-	@FXML val hBoxDimChords: HBox = null;
+	val keyboardKeys = MutableList.empty[ChordKeyController]
 	
 	def updateKeys() {
 		keyboardKeys.foreach(_.updateLabels())
 	}
 	
-	def stopAll() {
+	def resetAll() {
 		if (chordNowPlaying != null) chordNowPlaying.reset()
 	}
-	
-	val overallVolumeTimer = new PeriodicTask
-	var desiredOverallVolume = 100
-	
-	def overallVolumeTaskFn() {
-		val overallVolume = Sampler.getOverallVolume
-		val diff = math.signum(desiredOverallVolume - overallVolume) 
-		
-		if (diff == 0) {
-			overallVolumeTimer.stopTask()
-		} else {
-			Sampler.setOverallVolume(overallVolume + diff)
-		}		
-	}
-	
-	def changeOverallVolumeTo(volume: Int) {
-		desiredOverallVolume = volume
-		overallVolumeTimer.stopTask()
-		overallVolumeTimer.startTask(overallVolumeTaskFn, 10)		
-	}
-	
-	var overallVolume = 100
 	
 	def updateChordRowsOpacity() {
 		keyCodeModifier match {
@@ -97,35 +71,35 @@ class MainController(val stage: Stage) {
 		val keyCode = event.getCode
 		
 		keyCode match {
-			case KeyCode.SPACE => 
-				stopAll()
+			case KeyCode.BACK_SPACE => 
+				resetAll()
 			case KeyCode.LEFT => {
-				stopAll()
+				resetAll()
 				key += 1
 				updateKeys()
 			}
 			case KeyCode.RIGHT => {
-				stopAll()
+				resetAll()
 				key -= 1
 				updateKeys()
 			}
 			case KeyCode.UP => {
-				stopAll()
+				resetAll()
 				chordRootPos = 6
 				updateKeys()
 			}
 			case KeyCode.DOWN => {
-				stopAll()
+				resetAll()
 				chordRootPos = 9
 				updateKeys()
 			}
 			case KeyCode.PAGE_DOWN => {
-				stopAll()
-				CurrentPlayStyle.switchToNextPlayStyle
+				resetAll()
+				switchToNextChordPlayer()
 			}
 			case KeyCode.PAGE_UP => {
-				stopAll()
-				CurrentPlayStyle.switchToPrevPlayStyle
+				resetAll()
+				switchToPrevChordPlayer()
 			}
 			case KeyCode.SHIFT => {
 				keyCodeModifier |= KeyCodeModifier.SHIFT

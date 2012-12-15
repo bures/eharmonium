@@ -18,7 +18,7 @@ class ChordKeyController(val mCtrl: MainController, val index: Int, val keyCode:
 	@FXML val rectangle: Rectangle = null;
 
 	var isPressed: Boolean = false;
-	var nowPlaying: Chord = null;
+	var isPlaying: Boolean = false;
 	
 	def getChord = Chord.nthFifthFrom(mCtrl.key, chordKind, index - mCtrl.chordRootPos + chordKind.relPositionToMajor, mCtrl.chordRelativeHighestNote)
 	
@@ -30,23 +30,21 @@ class ChordKeyController(val mCtrl: MainController, val index: Int, val keyCode:
 	}
 	
 	def keyPressed() {
-		val chord = getChord
-		
 		if (isPressed) return
 		isPressed = true
 		
-		if (nowPlaying == null || nowPlaying != chord) {
+		if (!isPlaying) {
 			if (mCtrl.chordNowPlaying != null) {
 				mCtrl.chordNowPlaying.stop()
 			}
 		
 			mCtrl.chordNowPlaying = this
-			nowPlaying = chord
-			chord.play()
+			isPlaying = true
+			mCtrl.chordPlayer.play(getChord)
 			
 			rectangle.getStyleClass.add("chordKeyRectanglePlaying");
 		} else {
-			chord.pressed()
+			mCtrl.chordPlayer.chordPressed()
 		}
 
 		rectangle.getStyleClass.add("chordKeyRectanglePressed");
@@ -55,16 +53,16 @@ class ChordKeyController(val mCtrl: MainController, val index: Int, val keyCode:
 	def keyReleased() {
 		isPressed = false
 		
-		if (nowPlaying != null) {
+		if (isPlaying) {
 			rectangle.getStyleClass.remove("chordKeyRectanglePressed");
 			
-			nowPlaying.released()			
+			mCtrl.chordPlayer.chordReleased()			
 		}
 	}
 	
 	def stopOrReset(isReset: Boolean) {
 		assert(mCtrl.chordNowPlaying == this)
-		assert(nowPlaying != null)
+		assert(isPlaying)
 		mCtrl.chordNowPlaying = null
 
 		rectangle.getStyleClass.remove("chordKeyRectanglePlaying");
@@ -74,11 +72,11 @@ class ChordKeyController(val mCtrl: MainController, val index: Int, val keyCode:
 		}
 
 		if (isReset) 
-			nowPlaying.reset()
+			mCtrl.chordPlayer.reset()
 		else 
-			nowPlaying.stop()
+			mCtrl.chordPlayer.stop()
 			
-		nowPlaying = null		
+		isPlaying = false
 	}
 	
 	def stop() {

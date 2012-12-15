@@ -23,7 +23,7 @@ object PeriodicTaskScheduler {
 class PeriodicTask {
 	private var task: Task = null
 	
-	class Task(val taskFn: () => Unit, val period: Int) extends Runnable {
+	private class Task(val taskFn: () => Unit, val period: Int) extends Runnable {
 		var isCancelled = false
 		val taskFuture: ScheduledFuture[Unit] = PeriodicTaskScheduler.scheduler.scheduleAtFixedRate(
 				Task.this, 0, period, TimeUnit.MILLISECONDS).asInstanceOf[ScheduledFuture[Unit]]			

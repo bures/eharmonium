@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="main" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#handleKeyPressed" onKeyReleased="#handleKeyReleased" prefHeight="115.0" prefWidth="877.0" xmlns:fx="http://javafx.com/fxml">
+  <children>
+    <StackPane AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+      <children>
+        <VBox fx:id="vBoxChords" alignment="CENTER" spacing="5.0">
+          <children>
+            <HBox fx:id="hBoxMajorChords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+              <children>
+                <Pane prefHeight="50.0" prefWidth="27.0" />
+              </children>
+            </HBox>
+            <HBox fx:id="hBoxMinorChords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+              <children>
+                <Pane prefHeight="50.0" prefWidth="27.0" />
+              </children>
+            </HBox>
+          </children>
+        </VBox>
+        <VBox fx:id="vBoxChords7" alignment="CENTER" spacing="5.0">
+          <children>
+            <HBox fx:id="hBoxMajor7Chords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+              <children>
+                <Pane prefHeight="50.0" prefWidth="27.0" />
+              </children>
+            </HBox>
+            <HBox fx:id="hBoxMinor7Chords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+              <children>
+                <Pane prefHeight="50.0" prefWidth="27.0" />
+              </children>
+            </HBox>
+          </children>
+        </VBox>
+        <VBox fx:id="vBoxChordsDim" alignment="CENTER" spacing="5.0">
+          <children>
+            <HBox fx:id="hBoxDim5Chords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+              <children>
+                <Pane prefHeight="50.0" prefWidth="27.0" />
+              </children>
+            </HBox>
+            <HBox fx:id="hBoxDimChords" alignment="CENTER" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" spacing="5.0">
+              <children>
+                <Pane prefHeight="50.0" prefWidth="27.0" />
+              </children>
+            </HBox>
+          </children>
+        </VBox>
+      </children>
+    </StackPane>
+  </children>
+  <stylesheets>
+    <URL value="@main.css" />
+  </stylesheets>
+</AnchorPane>

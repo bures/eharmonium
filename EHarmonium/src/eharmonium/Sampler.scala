@@ -47,14 +47,14 @@ object Sampler {
 		val sm = new ShortMessage
 		sm.setMessage(ShortMessage.NOTE_ON, channel, tone, 100)
 		recv.send(sm, -1)
-		println("Sampler: channel " + channel + " tone " + tone + " on")
+		// println("Sampler: channel " + channel + " tone " + tone + " on")
 	}
 
 	def noteOff(channel: Int, tone: Int) {
 		val sm = new ShortMessage
 		sm.setMessage(ShortMessage.NOTE_OFF, channel, tone, 0)
 		recv.send(sm, -1)
-		println("Sampler: channel " + channel + " tone " + tone + " off")
+		// println("Sampler: channel " + channel + " tone " + tone + " off")
 	}
 	
 	def setOverallVolume(volume: Int) {

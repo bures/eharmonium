@@ -114,6 +114,9 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 			case KeyCode.F3 => changeOverallVolumeTo(50)
 			case KeyCode.F4 => changeOverallVolumeTo(100)
 
+			case KeyCode.SPACE => 
+				chordPlayer.spacePressed()
+
 			case _ => keyboardKeys.
 				filter((keyCtrl) => keyCtrl.keyCode == keyCode && keyCtrl.keyCodeModifier == keyCodeModifier).
 				foreach(_.keyPressed())
@@ -133,6 +136,10 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 				keyCodeModifier &= ~KeyCodeModifier.CTRL
 				updateChordRowsOpacity()
 			}
+
+			case KeyCode.SPACE => 
+				chordPlayer.spaceReleased()
+
 			case _ => keyboardKeys.
 				filter((keyCtrl) => keyCtrl.keyCode == keyCode /* && keyCtrl.keyCodeModifier == keyCodeModifier */).
 				foreach(_.keyReleased())

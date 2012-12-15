@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<Pane prefHeight="50" prefWidth="50" xmlns:fx="http://javafx.com/fxml">
+  <children>
+	<Rectangle styleClass="noteKeyRectangle" height="50" width="50" />
+	<Label styleClass="noteKeyNote" alignment="CENTER" prefHeight="50" prefWidth="50.0" styleClass="keyActualChord" text="C1" />
+	<Label styleClass="noteKeyKeyboard" alignment="CENTER" prefHeight="50" prefWidth="50.0" styleClass="keyActualChord" text="Z" />
+  </children>
+  <stylesheets>
+    <URL value="@main.css" />
+  </stylesheets>
+</Pane>

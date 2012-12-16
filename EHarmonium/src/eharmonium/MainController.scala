@@ -16,21 +16,21 @@ import javafx.scene.paint.Color
 import javafx.application.Platform
 
 class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlayerMixin {
-	@FXML val vBoxChords: VBox = null
-	@FXML val hBoxMajorChords: HBox = null
-	@FXML val hBoxMinorChords: HBox = null
+	@FXML private val vBoxChords: VBox = null
+	@FXML private val hBoxMajorChords: HBox = null
+	@FXML private val hBoxMinorChords: HBox = null
 
-	@FXML val vBoxChords7: VBox = null
-	@FXML val hBoxMajor7Chords: HBox = null
-	@FXML val hBoxMinor7Chords: HBox = null
+	@FXML private val vBoxChords7: VBox = null
+	@FXML private val hBoxMajor7Chords: HBox = null
+	@FXML private val hBoxMinor7Chords: HBox = null
 	
-	@FXML val vBoxChordsDim: VBox = null
-	@FXML val hBoxDim5Chords: HBox = null
-	@FXML val hBoxDimChords: HBox = null
+	@FXML private val vBoxChordsDim: VBox = null
+	@FXML private val hBoxDim5Chords: HBox = null
+	@FXML private val hBoxDimChords: HBox = null
 	
-	@FXML val bellowsLevel: Rectangle = null
+	@FXML private val bellowsLevel: Rectangle = null
 	
-	var isBacktickPressed = false // If backtick is pressed while pressing the chord already playing, 
+	private var isBacktickPressed = false // If backtick is pressed while pressing the chord already playing, 
 	                              // the chord is first stopped, which causes is to be played with the
 	                              // randomization of initial delays of it's tones
 	
@@ -38,23 +38,29 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 	var chordRootPos: Int = 6 // Position of the root major chord on the chord keyboard
 	var chordRelativeHighestNote = 4
 	
-	var chordNowPlaying: ChordKeyController = null
+	var toneRootPos: Int = 7 // Position of the key note on the tone keyboard
 	
-	var keyCodeModifier = 0
-	val keyboardKeys = MutableList.empty[ChordKeyController]
+	var chordKeyNowPlaying: ChordKeyController = null
 	
-	def updateKeys() {
-		keyboardKeys.foreach(_.updateLabels())
+	private var keyCodeModifier = 0
+	private val chordKeys = MutableList.empty[ChordKeyController]
+	private val toneKeys = MutableList.empty[ToneKeyController]
+	
+	private def updateKeys() {
+		chordKeys.foreach(_.updateLabels())
+		toneKeys.foreach(_.updateLabels())
 	}
 	
-	def resetAll() {
-		if (chordNowPlaying != null) 
-			chordNowPlaying.reset()
+	private def resetAll() {
+		if (chordKeyNowPlaying != null) 
+			chordKeyNowPlaying.reset()
 		else 
 			chordPlayer.reset() // This is here to allows reseting bellows volume
+		
+		toneKeys.foreach(_.stop())
 	}
 	
-	def updateChordRowsOpacity() {
+	private def updateChordRowsOpacity() {
 		keyCodeModifier match {
 			case 0 => {
 				vBoxChords.setOpacity(1)
@@ -80,12 +86,13 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 	}
 
 	@FXML
-	def handleKeyPressed(event: KeyEvent) {
+	private def handleKeyPressed(event: KeyEvent) {
 		val keyCode = event.getCode
 		
 		keyCode match {
 			case KeyCode.BACK_SPACE => 
 				resetAll()
+		
 			case KeyCode.LEFT => {
 				resetAll()
 				key += 1
@@ -122,10 +129,10 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 				keyCodeModifier |= KeyCodeModifier.CTRL
 				updateChordRowsOpacity()
 			}
-			case KeyCode.F1 => changeOverallVolumeTo(0)
-			case KeyCode.F2 => changeOverallVolumeTo(25)
-			case KeyCode.F3 => changeOverallVolumeTo(50)
-			case KeyCode.F4 => changeOverallVolumeTo(100)
+			case KeyCode.F9 => changeOverallVolumeTo(0)
+			case KeyCode.F10 => changeOverallVolumeTo(25)
+			case KeyCode.F11 => changeOverallVolumeTo(50)
+			case KeyCode.F12 => changeOverallVolumeTo(100)
 
 			case KeyCode.SPACE => 
 				chordPlayer.spacePressed()
@@ -133,17 +140,21 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 			case KeyCode.BACK_QUOTE =>
 				isBacktickPressed = true
 									
-			case _ => keyboardKeys.
-				filter((keyCtrl) => keyCtrl.keyCode == keyCode && keyCtrl.keyCodeModifier == keyCodeModifier).
-					foreach{ x => 
-						if (isBacktickPressed && x == chordNowPlaying && !chordNowPlaying.isPressed) chordNowPlaying.stop()
-						x.keyPressed()
-					}
+			case _ => {				
+				chordKeys.
+					filter(keyCtrl => keyCtrl.keyCode == keyCode && keyCtrl.keyCodeModifier == keyCodeModifier).
+						foreach{ keyCtrl => 
+							if (isBacktickPressed && keyCtrl == chordKeyNowPlaying && !chordKeyNowPlaying.isPressed) chordKeyNowPlaying.stop()
+							keyCtrl.keyPressed()
+						}
+				
+				toneKeys.filter(keyCtrl => keyCtrl.keyCode == keyCode).foreach(_.play())
+			}
 		}
 	}
 	
-	@FXML
-	def handleKeyReleased(event: KeyEvent) {
+	@FXML 
+	private def handleKeyReleased(event: KeyEvent) {
 		val keyCode = event.getCode
 
 		keyCode match {
@@ -162,19 +173,26 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 			case KeyCode.BACK_QUOTE =>
 				isBacktickPressed = false
 									
-			case _ => keyboardKeys.
-				filter((keyCtrl) => keyCtrl.keyCode == keyCode /* && keyCtrl.keyCodeModifier == keyCodeModifier */).
-				foreach(_.keyReleased())
+			case _ => {
+				chordKeys.
+					filter(keyCtrl => keyCtrl.keyCode == keyCode).
+						foreach(_.keyReleased())
+
+				toneKeys.filter(keyCtrl => keyCtrl.keyCode == keyCode).foreach(_.play())
+			}
+
 		}
 	}
 	
-	def initialize() {
+	private def initialize() {
 		buildChordKeys()
 		vBoxChords7.setOpacity(0)
 		vBoxChordsDim.setOpacity(0)
+
+		buildToneKeys()
 	}
 	
-	def buildChordKeys() {
+	private def buildToneKeys() {
 		def buildKeyRow(keyRow: Array[(KeyCode, String)], isUpperRow: Boolean, keyCodeModifier: Int, chordKind: ChordKind, hBox: HBox) {
 			for (idx <- 0 until keyRow.length) {
 				val (keyCode, keyName) = keyRow(idx)
@@ -188,7 +206,44 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 				else 
 					hBox.getChildren().add(pane)
 			
-				keyboardKeys += fxmlLoader.getController[ChordKeyController]
+				chordKeys += fxmlLoader.getController[ChordKeyController]
+			}
+		}
+		
+		val upperRow = Array(
+				KeyCode.DIGIT1 -> "1", KeyCode.DIGIT2 -> "2", KeyCode.DIGIT3 -> "3", KeyCode.DIGIT4 -> "4",
+				KeyCode.DIGIT5 -> "5", KeyCode.DIGIT6 -> "6", KeyCode.DIGIT7 -> "7", KeyCode.DIGIT8 -> "8",
+				KeyCode.DIGIT9 -> "9", KeyCode.DIGIT0 -> "0", KeyCode.MINUS -> "-", KeyCode.EQUALS -> "=")
+
+		val lowerRow = Array(
+				KeyCode.Q -> "Q", KeyCode.W -> "W", KeyCode.E -> "E", KeyCode.R -> "R",
+				KeyCode.T -> "T", KeyCode.Y -> "Y", KeyCode.U -> "U", KeyCode.I -> "I",
+				KeyCode.O -> "O", KeyCode.P -> "P", KeyCode.OPEN_BRACKET -> "[", KeyCode.CLOSE_BRACKET -> "]")
+
+		buildKeyRow(upperRow, true, 0, CHORD_MAJOR, hBoxMajorChords)
+		buildKeyRow(lowerRow, false, 0, CHORD_MINOR, hBoxMinorChords)
+		buildKeyRow(upperRow, true, KeyCodeModifier.SHIFT, CHORD_MAJOR_7, hBoxMajor7Chords)
+		buildKeyRow(lowerRow, false, KeyCodeModifier.SHIFT, CHORD_MINOR_7, hBoxMinor7Chords)
+		buildKeyRow(upperRow, true, KeyCodeModifier.CTRL, CHORD_DIM5, hBoxDim5Chords)
+		buildKeyRow(lowerRow, false, KeyCodeModifier.CTRL, CHORD_DIM, hBoxDimChords)
+		
+	}
+	
+	private def buildChordKeys() {
+		def buildKeyRow(keyRow: Array[(KeyCode, String)], isUpperRow: Boolean, keyCodeModifier: Int, chordKind: ChordKind, hBox: HBox) {
+			for (idx <- 0 until keyRow.length) {
+				val (keyCode, keyName) = keyRow(idx)
+				
+				val fxmlLoader = new FXMLLoader(getClass().getResource("chordKey.fxml"))
+				fxmlLoader.setController(new ChordKeyController(this, idx, keyCode, keyCodeModifier, keyName, chordKind))
+				val pane = fxmlLoader.load().asInstanceOf[Pane]
+				
+				if (isUpperRow) 
+					hBox.getChildren().add(idx, pane)
+				else 
+					hBox.getChildren().add(pane)
+			
+				chordKeys += fxmlLoader.getController[ChordKeyController]
 			}
 		}
 		
@@ -210,7 +265,8 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 		buildKeyRow(lowerRow, false, KeyCodeModifier.CTRL, CHORD_DIM, hBoxDimChords)
 	}
 	
-	object BellowsLevelPainter extends Runnable {
+	
+	private object BellowsLevelUpdater extends Runnable {
 		private val bellowsLevelColorBottom = Color.web("#2060ff")
 		private val bellowsLevelColorTop = Color.web("#e02080")
 		
@@ -226,8 +282,8 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 	}
 	
 	override def setBellowsLevel(level: Double) {
-		BellowsLevelPainter.level = (level * 1000).floor.toInt
-		Platform.runLater(BellowsLevelPainter)
+		BellowsLevelUpdater.level = (level * 1000).floor.toInt
+		Platform.runLater(BellowsLevelUpdater)
 	}
 
 }

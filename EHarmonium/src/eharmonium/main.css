@@ -19,7 +19,6 @@
 	-fx-fill: linear-gradient(from 100.0% 0.0% to 100.0% 100.0%, #cce020 0.0%, #ccd420 100.0%);
 }
 
-
 .chordKeyAbstractChord, .chordKeyActualChord, .chordKeyKeyboard {
 	-fx-font-size: 16px;
 	-fx-effect: dropshadow(three-pass-box, #9f9f9f, 2, 0, 1, 1);	
@@ -37,19 +36,8 @@
 	-fx-text-fill: #2060B0;
 }
 
-.noteKeyNote {
-	
-}
 
-.noteKeyKeyboard {
-	
-}
-
-
-
-
-.noteKeyRectangle {
-	-fx-fill: white;
+.toneKeyRectangle, .toneKeyRectangle {
 	-fx-arc-width: 10px;
 	-fx-arc-height: 10px;
 	-fx-stroke: #808080;
@@ -57,7 +45,29 @@
 	-fx-stroke-width: 1px;
 }
 
-.noteKeyRectanglePressed {
+.toneKeyWhite .toneKeyRectangle {
+	-fx-fill: white;	
+}
+
+.toneKeyBlack .toneKeyRectangle {
+	-fx-fill: #292929;	
+}
+
+.toneKeyNote, .toneKeyKeyboard {
+	-fx-font-size: 16px;
+}
+.toneKeyWhite .toneKeyActualTone, .toneKeyWhite .toneKeyKeyboard {
+	-fx-text-fill: #292929; 
+	-fx-effect: dropshadow(three-pass-box, #9f9f9f, 2, 0, 1, 1);		
+}
+
+.toneKeyBlack .toneKeyActualTone, .toneKeyBlack .toneKeyKeyboard {
+	-fx-text-fill: #ffffff; 
+	-fx-effect: dropshadow(three-pass-box, #d0d0d0, 2, 0, 1, 1);		
+}
+
+
+.toneKeyRectanglePressed {
 	-fx-fill: linear-gradient(from 100.0% 0.0% to 100.0% 100.0%, #cce020 0.0%, #ccd420 100.0%);
 }
 

@@ -10,7 +10,7 @@ object CHORD_DIM extends ChordKind("Dim", "°", List(0, 3, 6), 0)
 
 object Chord {
 	private val abstractNames = Array("I", "ii", "II", "iii", "III", "IV", "v", "V", "vi", "VI", "vii", "VII")
-	private val chordNames = Array("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H")
+	private val actualNames = Array("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H")
 	
 	private def buildChords(baseFirst: Int, baseLast: Int, kind: ChordKind) = {
 		val chords = (baseFirst to baseLast) map {new Chord(_, kind)}
@@ -36,7 +36,7 @@ object Chord {
 
 class Chord(val base: Int, val kind: ChordKind) {
 	override def toString = name
-	def name = Chord.chordNames(base % 12) + kind.nameSuffix + "-" + octave
+	def name = Chord.actualNames(base % 12) + kind.nameSuffix + "-" + octave
 	def abstractName(baseKey: Int) = Chord.abstractNames((120000 + base - baseKey) % 12) + kind.nameSuffix
 
 	def octave = (base - 12) / 12

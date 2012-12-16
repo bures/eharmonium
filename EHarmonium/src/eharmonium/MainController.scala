@@ -30,6 +30,10 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 	
 	@FXML val bellowsLevel: Rectangle = null
 	
+	var isBacktickPressed = false // If backtick is pressed while pressing the chord already playing, 
+	                              // the chord is first stopped, which causes is to be played with the
+	                              // randomization of initial delays of it's tones
+	
 	var key: Int = 12 // Root tone
 	var chordRootPos: Int = 6 // Position of the root major chord on the chord keyboard
 	var chordRelativeHighestNote = 4
@@ -126,9 +130,15 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 			case KeyCode.SPACE => 
 				chordPlayer.spacePressed()
 
+			case KeyCode.BACK_QUOTE =>
+				isBacktickPressed = true
+									
 			case _ => keyboardKeys.
 				filter((keyCtrl) => keyCtrl.keyCode == keyCode && keyCtrl.keyCodeModifier == keyCodeModifier).
-				foreach(_.keyPressed())
+					foreach{ x => 
+						if (isBacktickPressed && x == chordNowPlaying && !chordNowPlaying.isPressed) chordNowPlaying.stop()
+						x.keyPressed()
+					}
 		}
 	}
 	
@@ -149,6 +159,9 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 			case KeyCode.SPACE => 
 				chordPlayer.spaceReleased()
 
+			case KeyCode.BACK_QUOTE =>
+				isBacktickPressed = false
+									
 			case _ => keyboardKeys.
 				filter((keyCtrl) => keyCtrl.keyCode == keyCode /* && keyCtrl.keyCodeModifier == keyCodeModifier */).
 				foreach(_.keyReleased())

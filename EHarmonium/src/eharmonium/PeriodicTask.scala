@@ -39,6 +39,13 @@ class PeriodicTask {
 				taskFuture.cancel(false)
 			}
 		}
+		
+		def doAsSynchronized(block : => Unit) {
+			synchronized {
+				block
+			}
+		}
+		
 	}
 	
 	def startTask(taskFn: () => Unit, period: Int) {
@@ -51,6 +58,14 @@ class PeriodicTask {
 			task.stop()
 			task = null
 		}		
+	}
+	
+	def doAsSynchronized(block : => Unit) {
+		if (task != null) {
+			task.doAsSynchronized(block)
+		} else {
+			block
+		}
 	}
 	
 	def isStarted() = task != null

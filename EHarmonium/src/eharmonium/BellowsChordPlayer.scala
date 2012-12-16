@@ -44,11 +44,23 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 			ensureVolumeTaskStarted()
 
 			Sampler.noteOn(0, base)
-			notesQueue.synchronized {
+			periodicTimer.doAsSynchronized {
 				assert(notesQueue.isEmpty)
 				
-				for (note <- tones if (note != base))
-					notesQueue.add(new NotesQueueEntry(Random.nextInt(15) % 10, note))
+				for (note <- tones if (note != base)) {
+					var rndWithDistrib = Random.nextInt(35)
+					if (rndWithDistrib >= 15) {
+						rndWithDistrib -= 15
+						if (rndWithDistrib >= 10) {
+							rndWithDistrib -= 10
+							if (rndWithDistrib >= 5) {
+								rndWithDistrib -= 5
+							}
+						}
+					}
+					println(rndWithDistrib)
+					notesQueue.add(new NotesQueueEntry(rndWithDistrib, note))
+				}
 			}
 	
 			playingState = PLAYING_PRESSED
@@ -84,7 +96,7 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 	}
 	
 	override protected def handleStop() {
-		notesQueue.synchronized {
+		periodicTimer.doAsSynchronized {
 			notesQueue.clear()
 			
 			for (note <- tones) 
@@ -116,18 +128,16 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 	private val maxBellowsVol = 125 - maxStressVol
 		
 	private def playDynamicsTask() {
-		notesQueue.synchronized{
-			val iter = notesQueue.iterator
+		val iter = notesQueue.iterator
 			
-			while (iter.hasNext) {
-				val entry = iter.next
-				
-				if (entry.periods == 0) {
-					Sampler.noteOn(0, entry.note)
-					iter.remove()
-				} else {
-					entry.periods -= 1
-				}
+		while (iter.hasNext) {
+			val entry = iter.next
+			
+			if (entry.periods == 0) {
+				Sampler.noteOn(0, entry.note)
+				iter.remove()
+			} else {
+				entry.periods -= 1
 			}
 		}
 		

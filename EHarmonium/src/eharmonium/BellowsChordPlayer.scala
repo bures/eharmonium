@@ -1,5 +1,9 @@
 package eharmonium
 
+import java.util.LinkedList
+
+import scala.util.Random
+
 class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends ChordPlayer(bellowsLevelObserver) {
 	private val PLAYING_STOPPED = 1
 	private val PLAYING_PRESSED = 2
@@ -19,6 +23,8 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 	private var isBellowsPressedAsSpace = false
 	private var isBellowsPressedAsChord = false
 	
+	class NotesQueueEntry(var periods: Int, val note: Int)
+	private val notesQueue = new LinkedList[NotesQueueEntry]
 	
 	private def reportError() = {
 		sys.error("Unexpected transition from state: " + playingState)
@@ -26,7 +32,7 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 	
 	private def ensureVolumeTaskStarted() {
 		if (!periodicTimer.isStarted)
-			periodicTimer.startTask(volumeTask, 10)			
+			periodicTimer.startTask(playDynamicsTask, 10)			
 	}
 	
 	override protected def handlePlay() {
@@ -36,9 +42,14 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 	
 			currentStressVol = 0
 			ensureVolumeTaskStarted()
-	
-			for (note <- tones)
-				Sampler.noteOn(0, note)
+
+			Sampler.noteOn(0, base)
+			notesQueue.synchronized {
+				assert(notesQueue.isEmpty)
+				
+				for (note <- tones if (note != base))
+					notesQueue.add(new NotesQueueEntry(Random.nextInt(15) % 10, note))
+			}
 	
 			playingState = PLAYING_PRESSED
 			isBellowsPressedAsChord = true
@@ -73,8 +84,12 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 	}
 	
 	override protected def handleStop() {
-		for (note <- tones) 
-			Sampler.noteOff(0, note)		
+		notesQueue.synchronized {
+			notesQueue.clear()
+			
+			for (note <- tones) 
+				Sampler.noteOff(0, note)		
+		}
 		
 		isBellowsPressedAsChord = false
 
@@ -97,12 +112,27 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 		setVolume(0)
 	}
 	
-	private val maxStressVol = 10
+	private val maxStressVol = 15
 	private val maxBellowsVol = 125 - maxStressVol
 		
-	private def volumeTask() {
+	private def playDynamicsTask() {
+		notesQueue.synchronized{
+			val iter = notesQueue.iterator
+			
+			while (iter.hasNext) {
+				val entry = iter.next
+				
+				if (entry.periods == 0) {
+					Sampler.noteOn(0, entry.note)
+					iter.remove()
+				} else {
+					entry.periods -= 1
+				}
+			}
+		}
+		
 		if (playingState == PLAYING_PRESSED) {
-			currentStressVol += 3
+			currentStressVol += 2
 			
 			if (currentStressVol > maxStressVol) {
 				currentStressVol = maxStressVol				
@@ -114,7 +144,7 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 				stressVolDecay = 0
 			}
 		} else if (playingState == PLAYING_RELEASED){
-			currentStressVol -= 3
+			currentStressVol -= 2
 			
 			if (currentStressVol < 0) { 
 				currentStressVol = 0	

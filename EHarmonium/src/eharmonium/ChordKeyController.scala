@@ -12,25 +12,41 @@ object KeyCodeModifier {
 }
 
 class ChordKeyController(val mCtrl: MainController, val index: Int, val keyCode: KeyCode, val keyCodeModifier: Int, val label: String, val chordKind: ChordKind) {
-	@FXML private val abstractChord: Label = null;
-	@FXML private val actualChord: Label = null;
-	@FXML private val keyboardKey: Label = null;
-	@FXML private val rectangle: Rectangle = null;
+	@FXML val abstractChord: Label = null
+	@FXML val actualChord: Label = null
+	@FXML val keyboardKey: Label = null
+	@FXML val rectangle: Rectangle = null
 
-	var isPressed: Boolean = false;
-	var isPlaying: Boolean = false;
+	var isPressed: Boolean = false
+	var isPlaying: Boolean = false
 	
 	private def getChord = Chord.nthFifthFrom(mCtrl.key, chordKind, index - mCtrl.chordRootPos + chordKind.relPositionToMajor, mCtrl.chordRelativeHighestNote)
 	
 	def updateLabels() {
+		assert(!isPlaying)
+		
 		val chord = getChord
-		actualChord.setText(chord.name)
-		abstractChord.setText(chord.abstractName(mCtrl.key))
-		keyboardKey.setText(label)
+		
+		if (chord.isEmpty) {
+			if (!rectangle.getStyleClass().contains("chordKeyRectangleNone"))
+				rectangle.getStyleClass().add("chordKeyRectangleNone")
+
+			actualChord.setText("")
+			abstractChord.setText("")
+			keyboardKey.setText("")		
+		} else {
+			rectangle.getStyleClass.remove("chordKeyRectangleNone");
+
+			actualChord.setText(chord.name)
+			abstractChord.setText(chord.abstractName(mCtrl.key))
+			keyboardKey.setText(label)
+		}
 	}
 	
 	def keyPressed() {
-		if (isPressed) return
+		val chord = getChord
+		
+		if (isPressed || chord.isEmpty) return
 		isPressed = true
 		
 		if (!isPlaying) {
@@ -40,7 +56,7 @@ class ChordKeyController(val mCtrl: MainController, val index: Int, val keyCode:
 		
 			mCtrl.chordKeyNowPlaying = this
 			isPlaying = true
-			mCtrl.chordPlayer.play(getChord)
+			mCtrl.chordPlayer.play(chord)
 			
 			rectangle.getStyleClass.add("chordKeyRectanglePlaying");
 		} else {
@@ -51,6 +67,8 @@ class ChordKeyController(val mCtrl: MainController, val index: Int, val keyCode:
 	}
 	
 	def keyReleased() {
+		if (getChord.isEmpty) return
+		
 		isPressed = false
 		
 		if (isPlaying) {
@@ -61,6 +79,8 @@ class ChordKeyController(val mCtrl: MainController, val index: Int, val keyCode:
 	}
 	
 	private def stopOrReset(isReset: Boolean) {
+		if (getChord.isEmpty) return
+
 		assert(mCtrl.chordKeyNowPlaying == this)
 		assert(isPlaying)
 		mCtrl.chordKeyNowPlaying = null

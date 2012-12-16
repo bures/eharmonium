@@ -48,6 +48,9 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 				assert(notesQueue.isEmpty)
 				
 				for (note <- tones if (note != base)) {
+					
+					// This is a very lame computation of a random value which has
+					// something like exponential distribution
 					var rndWithDistrib = Random.nextInt(35)
 					if (rndWithDistrib >= 15) {
 						rndWithDistrib -= 15
@@ -58,7 +61,7 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 							}
 						}
 					}
-					println(rndWithDistrib)
+					
 					notesQueue.add(new NotesQueueEntry(rndWithDistrib, note))
 				}
 			}

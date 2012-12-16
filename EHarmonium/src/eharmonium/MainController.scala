@@ -16,29 +16,33 @@ import javafx.scene.paint.Color
 import javafx.application.Platform
 
 class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlayerMixin {
-	@FXML private val vBoxChords: VBox = null
-	@FXML private val hBoxMajorChords: HBox = null
-	@FXML private val hBoxMinorChords: HBox = null
+	@FXML val vBoxChords: VBox = null
+	@FXML val hBoxMajorChords: HBox = null
+	@FXML val hBoxMinorChords: HBox = null
 
-	@FXML private val vBoxChords7: VBox = null
-	@FXML private val hBoxMajor7Chords: HBox = null
-	@FXML private val hBoxMinor7Chords: HBox = null
+	@FXML val vBoxChords7: VBox = null
+	@FXML val hBoxMajor7Chords: HBox = null
+	@FXML val hBoxMinor7Chords: HBox = null
 	
-	@FXML private val vBoxChordsDim: VBox = null
-	@FXML private val hBoxDim5Chords: HBox = null
-	@FXML private val hBoxDimChords: HBox = null
+	@FXML val vBoxChordsDim: VBox = null
+	@FXML val hBoxDim5Chords: HBox = null
+	@FXML val hBoxDimChords: HBox = null
+
+	@FXML val hBoxBlackToneKeys: HBox = null
+	@FXML val hBoxWhiteToneKeys: HBox = null
 	
-	@FXML private val bellowsLevel: Rectangle = null
+	@FXML val bellowsLevel: Rectangle = null
 	
 	private var isBacktickPressed = false // If backtick is pressed while pressing the chord already playing, 
 	                              // the chord is first stopped, which causes is to be played with the
 	                              // randomization of initial delays of it's tones
 	
-	var key: Int = 12 // Root tone
+	var key: Int = 36 // Root tone
 	var chordRootPos: Int = 6 // Position of the root major chord on the chord keyboard
 	var chordRelativeHighestNote = 4
 	
-	var toneRootPos: Int = 7 // Position of the key note on the tone keyboard
+	var toneRootPos: Int = 6 // Position of the key note on the tone keyboard
+	var toneOctaveStart: Int = 0 // A relative key w.r.t. C where the root note is positioned (0..13)   
 	
 	var chordKeyNowPlaying: ChordKeyController = null
 	
@@ -86,7 +90,7 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 	}
 
 	@FXML
-	private def handleKeyPressed(event: KeyEvent) {
+	def handleKeyPressed(event: KeyEvent) {
 		val keyCode = event.getCode
 		
 		keyCode match {
@@ -106,11 +110,13 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 			case KeyCode.UP => {
 				resetAll()
 				chordRootPos = 6
+				toneOctaveStart = 0
 				updateKeys()
 			}
 			case KeyCode.DOWN => {
 				resetAll()
 				chordRootPos = 9
+				toneOctaveStart = 10
 				updateKeys()
 			}
 			case KeyCode.PAGE_DOWN => {
@@ -140,7 +146,7 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 			case KeyCode.BACK_QUOTE =>
 				isBacktickPressed = true
 									
-			case _ => {				
+			case _ => {
 				chordKeys.
 					filter(keyCtrl => keyCtrl.keyCode == keyCode && keyCtrl.keyCodeModifier == keyCodeModifier).
 						foreach{ keyCtrl => 
@@ -154,7 +160,7 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 	}
 	
 	@FXML 
-	private def handleKeyReleased(event: KeyEvent) {
+	def handleKeyReleased(event: KeyEvent) {
 		val keyCode = event.getCode
 
 		keyCode match {
@@ -178,13 +184,13 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 					filter(keyCtrl => keyCtrl.keyCode == keyCode).
 						foreach(_.keyReleased())
 
-				toneKeys.filter(keyCtrl => keyCtrl.keyCode == keyCode).foreach(_.play())
+				toneKeys.filter(keyCtrl => keyCtrl.keyCode == keyCode).foreach(_.stop())
 			}
 
 		}
 	}
 	
-	private def initialize() {
+	def initialize() {
 		buildChordKeys()
 		vBoxChords7.setOpacity(0)
 		vBoxChordsDim.setOpacity(0)
@@ -193,39 +199,38 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 	}
 	
 	private def buildToneKeys() {
-		def buildKeyRow(keyRow: Array[(KeyCode, String)], isUpperRow: Boolean, keyCodeModifier: Int, chordKind: ChordKind, hBox: HBox) {
+		def buildKeyRow(keyRow: Array[(KeyCode, String)], isUpperRow: Boolean, hBox: HBox) {
 			for (idx <- 0 until keyRow.length) {
 				val (keyCode, keyName) = keyRow(idx)
 				
-				val fxmlLoader = new FXMLLoader(getClass().getResource("chordKey.fxml"))
-				fxmlLoader.setController(new ChordKeyController(this, idx, keyCode, keyCodeModifier, keyName, chordKind))
+				val fxmlLoader = new FXMLLoader(getClass().getResource("toneKey.fxml"))
+				
+				val keyIdx = if (isUpperRow) idx * 2 + 1 else idx * 2
+				
+				fxmlLoader.setController(new ToneKeyController(this, keyIdx, keyCode, keyName))
 				val pane = fxmlLoader.load().asInstanceOf[Pane]
 				
-				if (isUpperRow) 
+				if (!isUpperRow) 
 					hBox.getChildren().add(idx, pane)
 				else 
 					hBox.getChildren().add(pane)
 			
-				chordKeys += fxmlLoader.getController[ChordKeyController]
+				toneKeys += fxmlLoader.getController[ToneKeyController]
 			}
 		}
 		
-		val upperRow = Array(
-				KeyCode.DIGIT1 -> "1", KeyCode.DIGIT2 -> "2", KeyCode.DIGIT3 -> "3", KeyCode.DIGIT4 -> "4",
-				KeyCode.DIGIT5 -> "5", KeyCode.DIGIT6 -> "6", KeyCode.DIGIT7 -> "7", KeyCode.DIGIT8 -> "8",
-				KeyCode.DIGIT9 -> "9", KeyCode.DIGIT0 -> "0", KeyCode.MINUS -> "-", KeyCode.EQUALS -> "=")
+		val blackRow = Array(
+				KeyCode.A -> "A", KeyCode.S -> "S", KeyCode.D -> "D", KeyCode.F -> "F",
+				KeyCode.G -> "G", KeyCode.H -> "H", KeyCode.J -> "J", KeyCode.K -> "K",
+				KeyCode.L -> "L", KeyCode.SEMICOLON -> ";", KeyCode.QUOTE -> "'")
 
-		val lowerRow = Array(
-				KeyCode.Q -> "Q", KeyCode.W -> "W", KeyCode.E -> "E", KeyCode.R -> "R",
-				KeyCode.T -> "T", KeyCode.Y -> "Y", KeyCode.U -> "U", KeyCode.I -> "I",
-				KeyCode.O -> "O", KeyCode.P -> "P", KeyCode.OPEN_BRACKET -> "[", KeyCode.CLOSE_BRACKET -> "]")
+		val whiteRow = Array(
+				KeyCode.LESS -> "\\", KeyCode.Z -> "Z", KeyCode.X -> "X", KeyCode.C -> "C",
+				KeyCode.V -> "V", KeyCode.B -> "B", KeyCode.N -> "N", KeyCode.M -> "M",
+				KeyCode.COMMA -> ",", KeyCode.PERIOD -> ".", KeyCode.SLASH -> "/")
 
-		buildKeyRow(upperRow, true, 0, CHORD_MAJOR, hBoxMajorChords)
-		buildKeyRow(lowerRow, false, 0, CHORD_MINOR, hBoxMinorChords)
-		buildKeyRow(upperRow, true, KeyCodeModifier.SHIFT, CHORD_MAJOR_7, hBoxMajor7Chords)
-		buildKeyRow(lowerRow, false, KeyCodeModifier.SHIFT, CHORD_MINOR_7, hBoxMinor7Chords)
-		buildKeyRow(upperRow, true, KeyCodeModifier.CTRL, CHORD_DIM5, hBoxDim5Chords)
-		buildKeyRow(lowerRow, false, KeyCodeModifier.CTRL, CHORD_DIM, hBoxDimChords)
+		buildKeyRow(blackRow, true, hBoxBlackToneKeys)
+		buildKeyRow(whiteRow, false, hBoxWhiteToneKeys)
 		
 	}
 	

@@ -36,6 +36,11 @@
 	-fx-text-fill: #2060B0;
 }
 
+.chordKeyRectangleNone {
+	-fx-fill: white;
+	-fx-stroke: white;
+}
+
 
 .toneKeyRectangle, .toneKeyRectangle {
 	-fx-arc-width: 10px;
@@ -53,7 +58,7 @@
 	-fx-fill: #292929;	
 }
 
-.toneKeyNote, .toneKeyKeyboard {
+.toneKeyActualTone, .toneKeyKeyboard {
 	-fx-font-size: 16px;
 }
 .toneKeyWhite .toneKeyActualTone, .toneKeyWhite .toneKeyKeyboard {
@@ -67,8 +72,17 @@
 }
 
 
-.toneKeyRectanglePressed {
-	-fx-fill: linear-gradient(from 100.0% 0.0% to 100.0% 100.0%, #cce020 0.0%, #ccd420 100.0%);
+.toneKeyWhite .toneKeyRectanglePressed {
+	-fx-fill: #e0e0e0;
+}
+
+.toneKeyBlack .toneKeyRectanglePressed {
+	-fx-fill: #505050;
+}
+
+.toneKeyWhite .toneKeyRectangleNone, .toneKeyBlack .toneKeyRectangleNone {
+	-fx-fill: white;
+	-fx-stroke: white;
 }
 
 

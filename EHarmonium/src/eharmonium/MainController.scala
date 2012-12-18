@@ -20,7 +20,7 @@ import org.jpedal.fonts.FontMappings
 import java.io.File
 import javafx.embed.swing.SwingFXUtils
 
-class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlayerMixin {
+class MainController(val stage: Stage) extends OverallVolumeMixin with PlayerMixin {
 	@FXML val vBoxChords: VBox = null
 	@FXML val hBoxMajorChords: HBox = null
 	@FXML val hBoxMinorChords: HBox = null
@@ -36,13 +36,14 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 	@FXML val hBoxBlackToneKeys: HBox = null
 	@FXML val hBoxWhiteToneKeys: HBox = null
 	
-	@FXML val bellowsLevel: Rectangle = null
-	
 	@FXML val imgPDFPage: ImageView = null
 	
 	private var isBacktickPressed = false // If backtick is pressed while pressing the chord already playing, 
 	                              // the chord is first stopped, which causes is to be played with the
 	                              // randomization of initial delays of it's tones
+	
+	private var isSpacePressed = false;
+	private var isTabPressed = false;
 	
 	var key: Int = 36 // Root tone
 	var chordRootPos: Int = 6 // Position of the root major chord on the chord keyboard
@@ -66,7 +67,7 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 		if (chordKeyNowPlaying != null) 
 			chordKeyNowPlaying.reset()
 		else 
-			chordPlayer.reset() // This is here to allows reseting bellows volume
+			player.reset() // This is here to allows reseting bellows volume
 		
 		toneKeys.foreach(_.stop())
 	}
@@ -102,7 +103,8 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 		
 		keyCode match {
 			case KeyCode.BACK_SPACE => 
-				resetAll()
+				if (chordKeyNowPlaying != null) 
+					chordKeyNowPlaying.stop()
 		
 			case KeyCode.LEFT => {
 				resetAll()
@@ -128,11 +130,11 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 			}
 			case KeyCode.PAGE_DOWN => {
 				resetAll()
-				switchToNextChordPlayer()
+				switchToNextPlayer()
 			}
 			case KeyCode.PAGE_UP => {
 				resetAll()
-				switchToPrevChordPlayer()
+				switchToPrevPlayer()
 			}
 			case KeyCode.SHIFT => {
 				keyCodeModifier |= KeyCodeModifier.SHIFT
@@ -147,8 +149,19 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 			case KeyCode.F11 => changeOverallVolumeTo(50)
 			case KeyCode.F12 => changeOverallVolumeTo(100)
 
-			case KeyCode.SPACE => 
-				chordPlayer.spacePressed()
+			case KeyCode.SPACE => {
+				if (!isSpacePressed && !isTabPressed)
+					player.spacePressed()
+
+				isSpacePressed = true
+			}
+
+			case KeyCode.TAB => {
+				if (!isSpacePressed && !isTabPressed)
+					player.spacePressed()
+				
+				isTabPressed = true
+			}
 
 			case KeyCode.BACK_QUOTE =>
 				isBacktickPressed = true
@@ -180,8 +193,19 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 				updateChordRowsOpacity()
 			}
 
-			case KeyCode.SPACE => 
-				chordPlayer.spaceReleased()
+			case KeyCode.SPACE => {
+				if (isSpacePressed && !isTabPressed)
+					player.spaceReleased()
+				
+				isSpacePressed = false
+			}
+
+			case KeyCode.TAB => {
+				if (!isSpacePressed && isTabPressed)
+					player.spaceReleased()
+				
+				isTabPressed = false
+			}
 
 			case KeyCode.BACK_QUOTE =>
 				isBacktickPressed = false
@@ -288,27 +312,6 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 		buildKeyRow(lowerRow, false, KeyCodeModifier.SHIFT, CHORD_MINOR_7, hBoxMinor7Chords)
 		buildKeyRow(upperRow, true, KeyCodeModifier.CTRL, CHORD_DIM5, hBoxDim5Chords)
 		buildKeyRow(lowerRow, false, KeyCodeModifier.CTRL, CHORD_DIM, hBoxDimChords)
-	}
-	
-	
-	private object BellowsLevelUpdater extends Runnable {
-		private val bellowsLevelColorBottom = Color.web("#2060ff")
-		private val bellowsLevelColorTop = Color.web("#e02080")
-		
-		var level: Int = 0
-		
-		override def run() {
-			val height = level * 105 / 1000
-			
-			bellowsLevel.setHeight(height)
-			bellowsLevel.setY(105 - height)
-			bellowsLevel.setFill(bellowsLevelColorBottom.interpolate(bellowsLevelColorTop, level / 1000.0))			
-		}
-	}
-	
-	override def setBellowsLevel(level: Double) {
-		BellowsLevelUpdater.level = (level * 1000).floor.toInt
-		Platform.runLater(BellowsLevelUpdater)
 	}
 
 }

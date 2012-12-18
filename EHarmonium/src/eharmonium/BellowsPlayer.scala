@@ -4,7 +4,7 @@ import java.util.LinkedList
 
 import scala.util.Random
 
-class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends ChordPlayer(bellowsLevelObserver) {
+class BellowsPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Player(bellowsLevelObserver) {
 	private val PLAYING_STOPPED = 1
 	private val PLAYING_PRESSED = 2
 	private val PLAYING_RELEASED = 3
@@ -47,7 +47,7 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 			periodicTimer.doAsSynchronized {
 				assert(notesQueue.isEmpty)
 				
-				for (note <- tones if (note != base)) {
+				for (note <- tones if note != base) yield {
 					
 					// This is a very lame computation of a random value which has
 					// something like exponential distribution
@@ -102,8 +102,7 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 		periodicTimer.doAsSynchronized {
 			notesQueue.clear()
 			
-			for (note <- tones) 
-				Sampler.noteOff(0, note)		
+			for (note <- tones) yield Sampler.noteOff(0, note)		
 		}
 		
 		isBellowsPressedAsChord = false
@@ -148,12 +147,12 @@ class BellowsChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Cho
 			currentStressVol += 2
 			
 			if (currentStressVol > maxStressVol) {
-				currentStressVol = maxStressVol				
-				stressVolDecay += 0.2
-				if (stressVolDecay > maxStressVol) {
-					stressVolDecay = maxStressVol
-				}
-			} else {
+					currentStressVol = maxStressVol				
+					stressVolDecay += 0.2
+					if (stressVolDecay > maxStressVol) {
+						stressVolDecay = maxStressVol
+					}
+				} else {
 				stressVolDecay = 0
 			}
 		} else if (playingState == PLAYING_RELEASED){

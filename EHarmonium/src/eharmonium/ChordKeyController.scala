@@ -56,11 +56,11 @@ class ChordKeyController(val mCtrl: MainController, val index: Int, val keyCode:
 		
 			mCtrl.chordKeyNowPlaying = this
 			isPlaying = true
-			mCtrl.chordPlayer.play(chord)
+			mCtrl.player.playChord(chord)
 			
 			rectangle.getStyleClass.add("chordKeyRectanglePlaying");
 		} else {
-			mCtrl.chordPlayer.chordPressed()
+			mCtrl.player.chordPressed()
 		}
 
 		rectangle.getStyleClass.add("chordKeyRectanglePressed");
@@ -74,7 +74,7 @@ class ChordKeyController(val mCtrl: MainController, val index: Int, val keyCode:
 		if (isPlaying) {
 			rectangle.getStyleClass.remove("chordKeyRectanglePressed");
 			
-			mCtrl.chordPlayer.chordReleased()			
+			mCtrl.player.chordReleased()			
 		}
 	}
 	
@@ -92,9 +92,9 @@ class ChordKeyController(val mCtrl: MainController, val index: Int, val keyCode:
 		}
 
 		if (isReset) 
-			mCtrl.chordPlayer.reset()
+			mCtrl.player.reset()
 		else 
-			mCtrl.chordPlayer.stop()
+			mCtrl.player.stopChord()
 			
 		isPlaying = false
 	}

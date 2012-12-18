@@ -1,6 +1,6 @@
 package eharmonium
 
-class ArpeggioChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends ChordPlayer(bellowsLevelObserver) {
+class ArpeggioPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Player(bellowsLevelObserver) {
 	
 	private val sequence = Array(
 			Array(0, 2),
@@ -58,7 +58,7 @@ class ArpeggioChordPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Ch
 	}
 
 	protected def handleReset() {
-		stop()
+		stopChord()
 		Sampler.setVolume(0, 0)
 		bellowsLevelObserver.setBellowsLevel(0)
 	}

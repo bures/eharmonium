@@ -31,52 +31,77 @@ trait PlayerMixin extends BellowsLevelObserver {
 		BellowsLevelUpdater.level = (level * 1000).floor.toInt
 		Platform.runLater(BellowsLevelUpdater)
 	}
-
 	
-	private val players = Array(new BellowsPlayer(PlayerMixin.this), new ArpeggioPlayer(PlayerMixin.this))
+	private val players = Array(new BellowsPlayer(this), new ConstantVolumePlayer(this), new ArpeggioPlayer(this))
 	private var currentPlayerIdx = 0
 	
 	def player = players(currentPlayerIdx)
+	player.init()
 	
 	def switchToNextPlayer() {
-		player.reset()
+		player.shutdown()
 		currentPlayerIdx = (currentPlayerIdx + 1) % players.length
+		player.init()
 	}
 
 	def switchToPrevPlayer() {
-		player.reset()
+		player.shutdown()
 		currentPlayerIdx = (currentPlayerIdx - 1 + players.length) % players.length
+		player.init()
 	}
 }
 
 abstract class Player(val bellowsLevelObserver: BellowsLevelObserver) {
-	protected var currentChord: Chord = null 
+	protected val chordsChannel = 0
+	protected val tonesChannel = 1
 	
-	protected def handlePlay()
-	protected def handleStop()
+	protected var currentChord: Chord = null
+	protected var currentChordKeyController: ChordKeyController = null
+	
+	protected def handlePlayChord()
+	protected def handleStopChord()
 	protected def handleChordPressed()
 	protected def handleSpacePressed()
 	protected def handleChordReleased()
 	protected def handleSpaceReleased()
-	protected def handleReset()
+	protected def handleInit()
+	protected def handleShutdown()
+	
+	def playTone(tone: Tone) {
+		if (!tone.isEmpty)
+			Sampler.noteOn(tonesChannel, tone.toneNo)
+	}
+	
+	def stopTone(tone: Tone) {
+		if (!tone.isEmpty)
+			Sampler.noteOff(tonesChannel, tone.toneNo)
+	}
+	
+	def stopAllTones() {
+		Sampler.allNotesOff(tonesChannel)
+	}
 	
 	/**
 	 * Starts playing a given chord. If another chord has been already playing, automatically invokes stop() first.
 	 */
-	def playChord(chord: Chord) {
-		if (currentChord != null && currentChord != chord) {
-			stopChord()
-		}
+	def playChord(chord: Chord, chordKeyController: ChordKeyController) {
+		assert(currentChord == null)
+
 		currentChord = chord
+		currentChordKeyController = chordKeyController
 		
-		handlePlay()
+		handlePlayChord()
 	}
 	
 	/**
 	 * Stops playing the chord. 
 	 */
 	def stopChord() {
-		handleStop()
+		assert(currentChord != null)
+		handleStopChord()
+		
+		currentChord = null
+		currentChordKeyController = null
 	}
 	
 	/**
@@ -107,14 +132,20 @@ abstract class Player(val bellowsLevelObserver: BellowsLevelObserver) {
 		handleSpaceReleased()
 	}
 	
+	def init() {
+		handleInit()
+		currentChord = null
+	}
+	
 	/**
 	 * Resets the player (e.g. as a response to pressing Backspace)
 	 */
-	def reset() {
-		handleReset()
-		currentChord = null
+	def shutdown() {
+		if (currentChord != null) 
+			stopChord()
+			
+		stopAllTones()
+		
+		handleShutdown()
 	}
 } 
-
-
-

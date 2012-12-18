@@ -63,11 +63,9 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with PlayerMix
 		toneKeys.foreach(_.updateLabels())
 	}
 	
-	private def resetAll() {
+	private def stopAll() {
 		if (chordKeyNowPlaying != null) 
-			chordKeyNowPlaying.reset()
-		else 
-			player.reset() // This is here to allows reseting bellows volume
+			chordKeyNowPlaying.stop()
 		
 		toneKeys.foreach(_.stop())
 	}
@@ -107,33 +105,33 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with PlayerMix
 					chordKeyNowPlaying.stop()
 		
 			case KeyCode.LEFT => {
-				resetAll()
+				stopAll()
 				key += 1
 				updateKeys()
 			}
 			case KeyCode.RIGHT => {
-				resetAll()
+				stopAll()
 				key -= 1
 				updateKeys()
 			}
 			case KeyCode.UP => {
-				resetAll()
+				stopAll()
 				chordRootPos = 6
 				toneOctaveStart = 0
 				updateKeys()
 			}
 			case KeyCode.DOWN => {
-				resetAll()
+				stopAll()
 				chordRootPos = 9
 				toneOctaveStart = 10
 				updateKeys()
 			}
 			case KeyCode.PAGE_DOWN => {
-				resetAll()
+				stopAll()
 				switchToNextPlayer()
 			}
 			case KeyCode.PAGE_UP => {
-				resetAll()
+				stopAll()
 				switchToPrevPlayer()
 			}
 			case KeyCode.SHIFT => {

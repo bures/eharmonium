@@ -15,8 +15,12 @@ object Sampler {
 	private val CHANNEL_VOLUME_MSB = 7
 	private val CHANNEL_VOLUME_LSB = 39
 
+	private val noOfChannels = 2
+	
 	private var overallVolume = 100 // 0..100
-	private val volumes = Array(100, 100)
+	private val volumes = Array.fill(noOfChannels)(100)
+	
+	private val notesPlaying = Array.fill(noOfChannels, 128)(false)
 	
 	def init() {
 		val deviceInfo = MidiSystem.getMidiDeviceInfo.find(_.getName == "CoolSoft VirtualMIDISynth").orNull
@@ -47,6 +51,7 @@ object Sampler {
 		val sm = new ShortMessage
 		sm.setMessage(ShortMessage.NOTE_ON, channel, tone, 100)
 		recv.send(sm, -1)
+		notesPlaying(channel)(tone) = true
 		// println("Sampler: channel " + channel + " tone " + tone + " on")
 	}
 
@@ -54,7 +59,14 @@ object Sampler {
 		val sm = new ShortMessage
 		sm.setMessage(ShortMessage.NOTE_OFF, channel, tone, 0)
 		recv.send(sm, -1)
+		notesPlaying(channel)(tone) = false
 		// println("Sampler: channel " + channel + " tone " + tone + " off")
+	}
+	
+	def allNotesOff(channel: Int) {
+		for (i <- 0 until notesPlaying(channel).length)
+			if (notesPlaying(channel)(i))
+				noteOff(channel, i)
 	}
 	
 	def setOverallVolume(volume: Int) {

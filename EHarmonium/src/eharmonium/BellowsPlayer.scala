@@ -30,20 +30,31 @@ class BellowsPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Player(b
 		sys.error("Unexpected transition from state: " + playingState)
 	}
 	
-	private def ensureVolumeTaskStarted() {
-		if (!periodicTimer.isStarted)
-			periodicTimer.startTask(playDynamicsTask, 10)			
+	override protected def handleInit() {
+		assert(!periodicTimer.isStarted)
+
+		periodicTimer.startTask(playDynamicsTask, 10)			
 	}
 	
-	override protected def handlePlay() {
+	override protected def handleShutdown() {
+		periodicTimer.stopTask()			
+
+		currentBellowsVol = 0
+		currentStressVol = 0
+		isBellowsPressedAsSpace = false
+		
+		Sampler.setVolume(chordsChannel, 0)
+		Sampler.setVolume(tonesChannel, 0)
+		bellowsLevelObserver.setBellowsLevel(0)
+	}
+	
+	override protected def handlePlayChord() {
 		if (playingState == PLAYING_STOPPED) {
 			tones = currentChord.tones
 			base = tones(0)
 	
 			currentStressVol = 0
-			ensureVolumeTaskStarted()
-
-			Sampler.noteOn(0, base)
+			Sampler.noteOn(chordsChannel, base)
 			periodicTimer.doAsSynchronized {
 				assert(notesQueue.isEmpty)
 				
@@ -90,7 +101,6 @@ class BellowsPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Player(b
 	}
 
 	override protected def handleSpacePressed() {
-		ensureVolumeTaskStarted()
 		isBellowsPressedAsSpace = true
 	}
 	
@@ -98,32 +108,17 @@ class BellowsPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Player(b
 		isBellowsPressedAsSpace = false
 	}
 	
-	override protected def handleStop() {
+	override protected def handleStopChord() {
 		periodicTimer.doAsSynchronized {
 			notesQueue.clear()
 			
-			for (note <- tones) yield Sampler.noteOff(0, note)		
+			for (note <- tones) yield Sampler.noteOff(chordsChannel, note)		
 		}
 		
 		isBellowsPressedAsChord = false
+		tones = null
 
 		playingState = PLAYING_STOPPED
-	}
-	
-	override protected def handleReset() {
-		if (currentChord != null) {
-			handleStop()
-			
-			tones = null		
-		}
-		
-		periodicTimer.stopTask()			
-		currentBellowsVol = 0
-		currentStressVol = 0
-		isBellowsPressedAsSpace = false
-		
-		bellowsLevelObserver.setBellowsLevel(0)
-		setVolume(0)
 	}
 	
 	private val maxStressVol = 15
@@ -136,7 +131,7 @@ class BellowsPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Player(b
 			val entry = iter.next
 			
 			if (entry.periods == 0) {
-				Sampler.noteOn(0, entry.note)
+				Sampler.noteOn(chordsChannel, entry.note)
 				iter.remove()
 			} else {
 				entry.periods -= 1
@@ -190,11 +185,8 @@ class BellowsPlayer(bellowsLevelObserver: BellowsLevelObserver) extends Player(b
 		}
 	
 		bellowsLevelObserver.setBellowsLevel(currentBellowsVol / maxBellowsVol)
-		setVolume((currentBellowsVol + currentStressVol - stressVolDecay).floor.toInt)
-	}
-
-	private def setVolume(vol: Int) {
-		Sampler.setVolume(0, vol)		
+		Sampler.setVolume(tonesChannel, currentBellowsVol.floor.toInt)
+		Sampler.setVolume(chordsChannel, (currentBellowsVol + currentStressVol - stressVolDecay).floor.toInt)
 	}
 	
 }

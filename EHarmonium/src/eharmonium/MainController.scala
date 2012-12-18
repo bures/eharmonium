@@ -14,6 +14,11 @@ import javafx.scene.shape.Rectangle
 import javafx.scene.paint.Paint
 import javafx.scene.paint.Color
 import javafx.application.Platform
+import javafx.scene.image.ImageView
+import org.jpedal.PdfDecoder
+import org.jpedal.fonts.FontMappings
+import java.io.File
+import javafx.embed.swing.SwingFXUtils
 
 class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlayerMixin {
 	@FXML val vBoxChords: VBox = null
@@ -32,6 +37,8 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 	@FXML val hBoxWhiteToneKeys: HBox = null
 	
 	@FXML val bellowsLevel: Rectangle = null
+	
+	@FXML val imgPDFPage: ImageView = null
 	
 	private var isBacktickPressed = false // If backtick is pressed while pressing the chord already playing, 
 	                              // the chord is first stopped, which causes is to be played with the
@@ -196,6 +203,19 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with ChordPlay
 		vBoxChordsDim.setOpacity(0)
 
 		buildToneKeys()
+
+		
+		val decoder = new PdfDecoder(true)
+		FontMappings.setFontReplacements()
+		decoder.openPdfFile("songbook" + File.separator + "HarmoniumEng.pdf")
+		decoder.setPageParameters(1.5f, 181)
+		val imgAWT = decoder.getPageAsImage(181)
+		decoder.closePdfFile()
+		val imgFX = SwingFXUtils.toFXImage(imgAWT, null)
+		imgPDFPage.setImage(imgFX)
+		imgPDFPage.setFitWidth(imgFX.getWidth)
+		imgPDFPage.setFitHeight(imgFX.getHeight)
+
 	}
 	
 	private def buildToneKeys() {

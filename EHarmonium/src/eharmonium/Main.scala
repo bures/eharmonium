@@ -21,12 +21,13 @@ class Main extends Application {
 
 		stage.setOnCloseRequest(new EventHandler[WindowEvent] {			
 			override def handle(event: WindowEvent) {
-				PeriodicTaskScheduler.shutdown();
+				PeriodicTaskScheduler.shutdown()
 			}
-		});
+		})
 		
-		stage.setTitle("E-Harmonium");
-		stage.setScene(new Scene(root, 1052, 225))
+		stage.setTitle("E-Harmonium")
+		stage.setScene(new Scene(root, 1000, 700))
+		stage.setFullScreen(true)
 		stage.show();
 	}
 	

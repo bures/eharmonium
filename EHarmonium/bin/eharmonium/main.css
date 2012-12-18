@@ -1,10 +1,17 @@
 .chordKeyRectangle {
 	-fx-fill: linear-gradient(from 100.0% 0.0% to 100.0% 100.0%, #cce0ff 0.0%, #ccd4ff 100.0%);
+/*
 	-fx-arc-width: 20px;
 	-fx-arc-height: 20px;
 	-fx-stroke: #006299;
 	-fx-stroke-type: inside;
 	-fx-stroke-width: 2px;
+*/
+	-fx-arc-width: 10px;
+	-fx-arc-height: 10px;
+	-fx-stroke: #006299;
+	-fx-stroke-type: inside;
+	-fx-stroke-width: 1px;
 }
 
 .chordKeyRectanglePressed {
@@ -35,12 +42,6 @@
 .chordKeyKeyboard {
 	-fx-text-fill: #2060B0;
 }
-
-.chordKeyRectangleNone {
-	-fx-fill: white;
-	-fx-stroke: white;
-}
-
 
 .toneKeyRectangle, .toneKeyRectangle {
 	-fx-arc-width: 10px;
@@ -78,11 +79,6 @@
 
 .toneKeyBlack .toneKeyRectanglePressed {
 	-fx-fill: #505050;
-}
-
-.toneKeyWhite .toneKeyRectangleNone, .toneKeyBlack .toneKeyRectangleNone {
-	-fx-fill: white;
-	-fx-stroke: white;
 }
 
 

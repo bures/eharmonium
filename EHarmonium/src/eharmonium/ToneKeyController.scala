@@ -29,11 +29,11 @@ class ToneKeyController(val mCtrl: MainController, val index: Int, val keyCode: 
 		else {
 			val relTone = relPos - (
 				if (relPos >= 0) 
-					(relPos + (9 + 14 - tos) % 14) / 14 + // This is how many times we cross index 5 on the way up
-					(relPos + (1 + 14 - tos) % 14) / 14 // This is how many times we cross index 13 on the way up
+					(relPos + (9 + tos) % 14) / 14 + // This is how many times we cross index 5 on the way up
+					(relPos + (1 + tos) % 14) / 14 // This is how many times we cross index 13 on the way up
 				else
-					(relPos + (-5 - 14 + tos) % 14) / 14 + // This is how many times we cross index 5 on the way down
-					(relPos + (-13 + tos)) / 14 // This is how many times we cross index 13 on the way down
+					(relPos + (-5 - tos) % 14) / 14 + // This is how many times we cross index 5 on the way down
+					(relPos + (-13 - tos) % 14) / 14 // This is how many times we cross index 13 on the way down
 			)
 			
 			Tone(mCtrl.key + relTone)
@@ -46,13 +46,12 @@ class ToneKeyController(val mCtrl: MainController, val index: Int, val keyCode: 
 		currentTone = getTone
 		
 		if (currentTone.isEmpty) {
-			if (!rectangle.getStyleClass().contains("toneKeyRectangleNone"))
-				rectangle.getStyleClass().add("toneKeyRectangleNone")
+			pane.setVisible(false)
 
 			actualTone.setText("")
 			keyboardKey.setText("")
 		} else {
-			rectangle.getStyleClass.remove("toneKeyRectangleNone");
+			pane.setVisible(true)
 			
 			actualTone.setText(currentTone.name)
 			// abstractTone.setText(tone.abstractName(mCtrl.key))

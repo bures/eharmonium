@@ -12,6 +12,7 @@ object KeyCodeModifier {
 }
 
 class ChordKeyController(val mCtrl: MainController, val index: Int, val keyCode: KeyCode, val keyCodeModifier: Int, val label: String, val chordKind: ChordKind) {
+	@FXML val pane: Pane = null
 	@FXML val abstractChord: Label = null
 	@FXML val actualChord: Label = null
 	@FXML val keyboardKey: Label = null
@@ -28,14 +29,13 @@ class ChordKeyController(val mCtrl: MainController, val index: Int, val keyCode:
 		val chord = getChord
 		
 		if (chord.isEmpty) {
-			if (!rectangle.getStyleClass().contains("chordKeyRectangleNone"))
-				rectangle.getStyleClass().add("chordKeyRectangleNone")
+			pane.setVisible(false)
 
 			actualChord.setText("")
 			abstractChord.setText("")
 			keyboardKey.setText("")		
 		} else {
-			rectangle.getStyleClass.remove("chordKeyRectangleNone");
+			pane.setVisible(true)
 
 			actualChord.setText(chord.name)
 			abstractChord.setText(chord.abstractName(mCtrl.key))

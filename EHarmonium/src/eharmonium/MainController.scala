@@ -19,6 +19,13 @@ import org.jpedal.PdfDecoder
 import org.jpedal.fonts.FontMappings
 import java.io.File
 import javafx.embed.swing.SwingFXUtils
+import javafx.scene.layout.AnchorPane
+import javafx.scene.control.ScrollPane
+import javafx.event.EventType
+import javafx.event.EventHandler
+import javafx.event.Event
+import javafx.scene.input.MouseEvent
+import javafx.scene.layout.BorderPane
 
 class MainController(val stage: Stage) extends OverallVolumeMixin with PlayerMixin {
 	@FXML val vBoxChords: VBox = null
@@ -36,7 +43,17 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with PlayerMix
 	@FXML val hBoxBlackToneKeys: HBox = null
 	@FXML val hBoxWhiteToneKeys: HBox = null
 	
-	@FXML val imgPDFPage: ImageView = null
+	@FXML val pdfScrollPane: ScrollPane = null
+	@FXML val pdfPage: ImageView = null
+	
+	@FXML val allControls: VBox = null
+	@FXML val tonesControl: AnchorPane = null
+	@FXML val chordsControlAndInfo: AnchorPane = null
+
+	@FXML val mainPane: AnchorPane = null
+	@FXML val mainContainer: BorderPane = null
+	
+	private var controlDisplayStatus = 2 // 1 - only chords and info, 2 - also tones, 0 - nothing
 	
 	private var isBacktickPressed = false // If backtick is pressed while pressing the chord already playing, 
 	                              // the chord is first stopped, which causes is to be played with the
@@ -100,6 +117,23 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with PlayerMix
 		val keyCode = event.getCode
 		
 		keyCode match {
+			case KeyCode.DELETE => {
+				controlDisplayStatus = (controlDisplayStatus + 1) % 3
+				
+				controlDisplayStatus match {
+					case 0 => {
+						mainContainer.setBottom(null)
+					}
+					case 1 => {
+						mainContainer.setBottom(allControls)
+						allControls.getChildren().remove(tonesControl)
+					}
+					case 2 => {
+						allControls.getChildren().add(0, tonesControl)
+					}
+				}
+			}
+			
 			case KeyCode.BACK_SPACE => 
 				if (chordKeyNowPlaying != null) 
 					chordKeyNowPlaying.stop()
@@ -226,6 +260,8 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with PlayerMix
 
 		buildToneKeys()
 
+		controlDisplayStatus = 1
+		allControls.getChildren().remove(tonesControl)
 		
 		val decoder = new PdfDecoder(true)
 		FontMappings.setFontReplacements()
@@ -234,9 +270,23 @@ class MainController(val stage: Stage) extends OverallVolumeMixin with PlayerMix
 		val imgAWT = decoder.getPageAsImage(181)
 		decoder.closePdfFile()
 		val imgFX = SwingFXUtils.toFXImage(imgAWT, null)
-		imgPDFPage.setImage(imgFX)
-		imgPDFPage.setFitWidth(imgFX.getWidth)
-		imgPDFPage.setFitHeight(imgFX.getHeight)
+		pdfPage.setImage(imgFX)
+		pdfPage.setFitWidth(imgFX.getWidth)
+		pdfPage.setFitHeight(imgFX.getHeight)
+		
+		mainPane.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler[KeyEvent] {
+			def handle(event: KeyEvent) {
+				handleKeyPressed(event)
+				event.consume()
+			}
+		})
+
+		mainPane.addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler[KeyEvent] {
+			def handle(event: KeyEvent) {
+				handleKeyReleased(event)
+				event.consume()
+			}
+		})
 
 	}
 	

@@ -25,8 +25,9 @@ public class SoundFontMaker {
 	public int getPitch(String fileName) {
 		for (int key = 0; key < keys.length; key++) {
 			try {
-				if (fileName.startsWith(keys[key])) {
-					int base = Integer.parseInt(fileName.substring(keys[key].length(), keys[key].length() + 1));
+				// Requires format "1C#.wav"
+				if (fileName.substring(1,fileName.length()-".wav".length()).equals(keys[key])) {
+					int base = Integer.parseInt(fileName.substring(0,1));
 					
 					return base * 12 + 12 + key;
 				}

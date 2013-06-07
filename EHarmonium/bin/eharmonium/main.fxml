@@ -13,93 +13,103 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="main" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#handleKeyPressed" onKeyReleased="#handleKeyReleased" prefHeight="700.0" prefWidth="900.0" xmlns:fx="http://javafx.com/fxml">
+<AnchorPane fx:id="mainPane" focusTraversable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1210.0" xmlns:fx="http://javafx.com/fxml">
   <children>
-    <ScrollPane fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-      <content>
-        <HBox id="HBox" alignment="TOP_CENTER" spacing="5.0">
+    <BorderPane fx:id="mainContainer" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <bottom>
+        <VBox fx:id="allControls" alignment="BOTTOM_CENTER" spacing="5.0">
           <children>
-            <ImageView id="imgSongBookPage" fx:id="imgPDFPage" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER" />
+            <AnchorPane fx:id="tonesControl" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="105.0" prefWidth="630.0">
+              <children>
+                <VBox fx:id="vBoxToneKeys" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="105.0" prefWidth="630.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+                  <children>
+                    <HBox fx:id="hBoxBlackToneKeys" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" spacing="5.0">
+                      <children>
+                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="25.0" />
+                      </children>
+                    </HBox>
+                    <HBox fx:id="hBoxWhiteToneKeys" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" spacing="5.0">
+                      <children>
+                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="25.0" />
+                      </children>
+                    </HBox>
+                  </children>
+                </VBox>
+              </children>
+            </AnchorPane>
+            <AnchorPane fx:id="chordsControlAndInfo" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="85.0" prefWidth="1200.0">
+              <children>
+                <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="85.0" prefWidth="867.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="167.0">
+                  <children>
+                    <VBox fx:id="vBoxChords" alignment="CENTER" spacing="5.0">
+                      <children>
+                        <HBox fx:id="hBoxMajorChords" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" spacing="5.0">
+                          <children>
+                            <Pane prefHeight="40.0" prefWidth="27.0" />
+                          </children>
+                        </HBox>
+                        <HBox fx:id="hBoxMinorChords" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" spacing="5.0">
+                          <children>
+                            <Pane prefHeight="40.0" prefWidth="27.0" />
+                          </children>
+                        </HBox>
+                      </children>
+                    </VBox>
+                    <VBox fx:id="vBoxChords7" alignment="CENTER" spacing="5.0">
+                      <children>
+                        <HBox fx:id="hBoxMajor7Chords" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" spacing="5.0">
+                          <children>
+                            <Pane prefHeight="40.0" prefWidth="27.0" />
+                          </children>
+                        </HBox>
+                        <HBox fx:id="hBoxMinor7Chords" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" spacing="5.0">
+                          <children>
+                            <Pane prefHeight="40.0" prefWidth="27.0" />
+                          </children>
+                        </HBox>
+                      </children>
+                    </VBox>
+                    <VBox fx:id="vBoxChordsDim" alignment="CENTER" spacing="5.0">
+                      <children>
+                        <HBox fx:id="hBoxDim5Chords" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" spacing="5.0">
+                          <children>
+                            <Pane prefHeight="40.0" prefWidth="27.0" />
+                          </children>
+                        </HBox>
+                        <HBox fx:id="hBoxDimChords" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" spacing="5.0">
+                          <children>
+                            <Pane prefHeight="40.0" prefWidth="27.0" />
+                          </children>
+                        </HBox>
+                      </children>
+                    </VBox>
+                  </children>
+                </StackPane>
+                <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="85.0" prefWidth="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="152.0">
+                  <children>
+                    <Rectangle fx:id="bellowsLevel" arcHeight="5.0" arcWidth="5.0" fill="#2060ff" stroke="BLACK" strokeType="INSIDE" width="10.0" y="85.0" />
+                  </children>
+                </Pane>
+              </children>
+            </AnchorPane>
           </children>
-        </HBox>
-      </content>
-    </ScrollPane>
-    <HBox id="HBox" alignment="BOTTOM_CENTER" spacing="5.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-      <children>
-        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="195.0" prefWidth="867.0" HBox.hgrow="NEVER">
-          <children>
-            <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="85.0" prefWidth="867.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+          <BorderPane.margin>
+            <Insets bottom="5.0" top="5.0" />
+          </BorderPane.margin>
+        </VBox>
+      </bottom>
+      <center>
+        <ScrollPane fx:id="pdfScrollPane" id="pdfScrollPane" fitToHeight="true" fitToWidth="true" pickOnBounds="true">
+          <content>
+            <HBox alignment="TOP_CENTER" spacing="5.0">
               <children>
-                <VBox fx:id="vBoxChords" alignment="CENTER" spacing="5.0">
-                  <children>
-                    <HBox fx:id="hBoxMajorChords" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" spacing="5.0">
-                      <children>
-                        <Pane prefHeight="40.0" prefWidth="27.0" />
-                      </children>
-                    </HBox>
-                    <HBox fx:id="hBoxMinorChords" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" spacing="5.0">
-                      <children>
-                        <Pane prefHeight="40.0" prefWidth="27.0" />
-                      </children>
-                    </HBox>
-                  </children>
-                </VBox>
-                <VBox fx:id="vBoxChords7" alignment="CENTER" spacing="5.0">
-                  <children>
-                    <HBox fx:id="hBoxMajor7Chords" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" spacing="5.0">
-                      <children>
-                        <Pane prefHeight="40.0" prefWidth="27.0" />
-                      </children>
-                    </HBox>
-                    <HBox fx:id="hBoxMinor7Chords" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" spacing="5.0">
-                      <children>
-                        <Pane prefHeight="40.0" prefWidth="27.0" />
-                      </children>
-                    </HBox>
-                  </children>
-                </VBox>
-                <VBox fx:id="vBoxChordsDim" alignment="CENTER" spacing="5.0">
-                  <children>
-                    <HBox fx:id="hBoxDim5Chords" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" spacing="5.0">
-                      <children>
-                        <Pane prefHeight="40.0" prefWidth="27.0" />
-                      </children>
-                    </HBox>
-                    <HBox fx:id="hBoxDimChords" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" spacing="5.0">
-                      <children>
-                        <Pane prefHeight="40.0" prefWidth="27.0" />
-                      </children>
-                    </HBox>
-                  </children>
-                </VBox>
+                <ImageView fx:id="pdfPage" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER" />
               </children>
-            </StackPane>
-            <VBox fx:id="vBoxToneKeys" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="105.0" prefWidth="630.0" spacing="5.0" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="0.0">
-              <children>
-                <HBox fx:id="hBoxBlackToneKeys" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" spacing="5.0">
-                  <children>
-                    <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="25.0" />
-                  </children>
-                </HBox>
-                <HBox fx:id="hBoxWhiteToneKeys" alignment="CENTER" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" spacing="5.0">
-                  <children>
-                    <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="25.0" />
-                  </children>
-                </HBox>
-              </children>
-            </VBox>
-            <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="105.0" prefWidth="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="872.0">
-              <children>
-                <Rectangle id="channelLevel" fx:id="bellowsLevel" arcHeight="5.0" arcWidth="5.0" fill="#2060ff" stroke="BLACK" strokeType="INSIDE" width="15.0" y="105.0" />
-              </children>
-            </Pane>
-          </children>
-          <HBox.margin>
-            <Insets />
-          </HBox.margin>
-        </AnchorPane>
-      </children>
-    </HBox>
+            </HBox>
+          </content>
+        </ScrollPane>
+      </center>
+    </BorderPane>
   </children>
   <stylesheets>
     <URL value="@main.css" />

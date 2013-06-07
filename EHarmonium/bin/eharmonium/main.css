@@ -1,12 +1,10 @@
+#pdfScrollPane:focused {
+	-fx-stroke: #ff0000;
+	-fx-effect: null;
+}
+
 .chordKeyRectangle {
-	-fx-fill: linear-gradient(from 100.0% 0.0% to 100.0% 100.0%, #cce0ff 0.0%, #ccd4ff 100.0%);
-/*
-	-fx-arc-width: 20px;
-	-fx-arc-height: 20px;
-	-fx-stroke: #006299;
-	-fx-stroke-type: inside;
-	-fx-stroke-width: 2px;
-*/
+	-fx-fill: #f0f0ff;
 	-fx-arc-width: 10px;
 	-fx-arc-height: 10px;
 	-fx-stroke: #006299;
@@ -14,16 +12,12 @@
 	-fx-stroke-width: 1px;
 }
 
-.chordKeyRectanglePressed {
-	-fx-fill: linear-gradient(from 100.0% 0.0% to 100.0% 100.0%, #cce020 0.0%, #ccd420 100.0%);
-}
-
 .chordKeyRectanglePlaying {
-	-fx-fill: linear-gradient(from 100.0% 0.0% to 100.0% 100.0%, #cce080 0.0%, #ccd480 100.0%);
+	-fx-fill: #ffe0e0;
 }
 
 .chordKeyRectanglePressed {
-	-fx-fill: linear-gradient(from 100.0% 0.0% to 100.0% 100.0%, #cce020 0.0%, #ccd420 100.0%);
+	-fx-fill: #ffd0d0;
 }
 
 .chordKeyAbstractChord, .chordKeyActualChord, .chordKeyKeyboard {

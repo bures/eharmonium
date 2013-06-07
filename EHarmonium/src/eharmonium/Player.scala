@@ -18,11 +18,13 @@ trait PlayerMixin extends BellowsLevelObserver {
 	
 		var level: Int = 0
 		
+		val maxHeight = 85
+		
 		override def run() {
-			val height = level * 105 / 1000
+			val height = level * maxHeight / 1000
 			
 			bellowsLevel.setHeight(height)
-			bellowsLevel.setY(105 - height)
+			bellowsLevel.setY(maxHeight - height)
 			bellowsLevel.setFill(bellowsLevelColorBottom.interpolate(bellowsLevelColorTop, level / 1000.0))			
 		}
 	}
